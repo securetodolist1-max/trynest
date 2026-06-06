@@ -1,0 +1,135 @@
+{
+  "title": "Admin - User Management Dashboard",
+  "tags": ["admin", "users", "management"],
+  "timezone": "browser",
+  "schemaVersion": 38,
+  "version": 1,
+  "refresh": "10s",
+  "time": {"from": "now-90d", "to": "now"},
+  "panels": [
+    {
+      "id": 1,
+      "title": "📊 Total Users",
+      "type": "stat",
+      "gridPos": {"h": 8, "w": 6, "x": 0, "y": 0},
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {"type": "postgres", "uid": ""},
+          "rawSql": "SELECT COUNT(*) as value FROM users",
+          "format": "table"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "thresholds"},
+          "mappings": [{"type": "value", "options": {"1": {"text": "1", "color": "green"}}}],
+          "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}]}
+        }
+      },
+      "options": {"colorMode": "background", "graphMode": "none", "justifyMode": "auto", "textMode": "auto", "orientation": "auto"}
+    },
+    {
+      "id": 2,
+      "title": "✅ Verified Users",
+      "type": "stat",
+      "gridPos": {"h": 8, "w": 6, "x": 6, "y": 0},
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {"type": "postgres", "uid": ""},
+          "rawSql": "SELECT COUNT(*) as value FROM users WHERE \"isVerified\" = true",
+          "format": "table"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "thresholds"},
+          "mappings": [{"type": "value", "options": {"1": {"text": "1", "color": "blue"}}}],
+          "thresholds": {"mode": "absolute", "steps": [{"color": "blue", "value": null}]}
+        }
+      },
+      "options": {"colorMode": "background", "graphMode": "none", "justifyMode": "auto", "textMode": "auto", "orientation": "auto"}
+    },
+    {
+      "id": 3,
+      "title": "🔒 Locked Users",
+      "type": "stat",
+      "gridPos": {"h": 8, "w": 6, "x": 12, "y": 0},
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {"type": "postgres", "uid": ""},
+          "rawSql": "SELECT COUNT(*) as value FROM users WHERE \"locked\" = true",
+          "format": "table"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "thresholds"},
+          "mappings": [{"type": "value", "options": {"1": {"text": "1", "color": "red"}}}],
+          "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": null}]}
+        }
+      },
+      "options": {"colorMode": "background", "graphMode": "none", "justifyMode": "auto", "textMode": "auto", "orientation": "auto"}
+    },
+    {
+      "id": 4,
+      "title": "👨‍💼 Admin Accounts",
+      "type": "stat",
+      "gridPos": {"h": 8, "w": 6, "x": 18, "y": 0},
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {"type": "postgres", "uid": ""},
+          "rawSql": "SELECT COUNT(*) as value FROM users WHERE \"role\" = 'ADMIN'",
+          "format": "table"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "thresholds"},
+          "mappings": [{"type": "value", "options": {"1": {"text": "1", "color": "orange"}}}],
+          "thresholds": {"mode": "absolute", "steps": [{"color": "orange", "value": null}]}
+        }
+      },
+      "options": {"colorMode": "background", "graphMode": "none", "justifyMode": "auto", "textMode": "auto", "orientation": "auto"}
+    },
+    {
+      "id": 5,
+      "title": "📋 Users List",
+      "type": "table",
+      "gridPos": {"h": 16, "w": 24, "x": 0, "y": 8},
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {"type": "postgres", "uid": ""},
+          "rawSql": "SELECT id, name, email, role, \"isVerified\", \"locked\", \"createdAt\" FROM users ORDER BY \"createdAt\" DESC",
+          "format": "table"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {"align": "auto", "inspect": false, "displayMode": "auto"},
+          "mappings": [],
+          "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}]}
+        },
+        "overrides": []
+      },
+      "options": {
+        "showHeader": true,
+        "sortBy": []
+      }
+    },
+    {
+      "id": 6,
+      "title": "📖 How to Delete Users",
+      "type": "text",
+      "gridPos": {"h": 20, "w": 24, "x": 0, "y": 24},
+      "options": {
+        "content": "# Admin - User Management Guide\n\n## 🚀 How to Delete Users\n\n### Step 1: Login as Admin\n1. Go to: **http://localhost:3000**\n2. Login with an **ADMIN account** (e.g., admin@example.com)\n3. On Dashboard, you'll see the **👥 Manage Users** button (only for admins)\n\n### Step 2: Access User Management Panel\n1. Click **👥 Manage Users** button on Dashboard\n2. OR go directly to: **http://localhost:3000/admin/users**\n\n### Step 3: Delete User\n1. In the User Management Panel, find the user you want to delete\n2. Click the red **🗑️ Delete** button next to their name\n3. Confirm the deletion\n4. User is deleted (along with all their tasks)\n\n---\n\n## 📊 Dashboard Information\n\n### Stats Cards\n- **📊 Total Users** - Count of all registered users\n- **✅ Verified Users** - Users who verified their email\n- **🔒 Locked Users** - Locked accounts (cannot login)\n- **👨‍💼 Admin Accounts** - Users with admin role\n\n### Users List Table\nShows all users with:\n- **id** - Unique user identifier\n- **name** - User's full name\n- **email** - Email address\n- **role** - ADMIN or USER\n- **isVerified** - Email verification status (true/false)\n- **locked** - Account status (true = locked, false = active)\n- **createdAt** - User registration date\n\n---\n\n## 🔧 Admin API Endpoints\n\nIf you prefer to use API commands:\n\n```bash\n# Delete a user\nDELETE /api/admin/users/{USER_ID}\n\n# Lock a user account (they can't login)\nPOST /api/admin/users/{USER_ID}/lock\n\n# Unlock a user account\nPOST /api/admin/users/{USER_ID}/unlock\n\n# Get all users\nGET /api/admin/users\n```\n\n---\n\n## ⚠️ Important Notes\n\n- **Only ADMIN users** can access the User Management Panel\n- When a user is deleted, **all their tasks are automatically deleted** (cascade delete)\n- Locked users **cannot login** to the application\n- Dashboard **auto-refreshes every 10 seconds**\n- You need a valid **JWT token** in Authorization header for API calls\n\n---\n\n## 🔗 Quick Links\n\n- **Frontend Dashboard:** http://localhost:3000\n- **User Management Panel:** http://localhost:3000/admin/users (admin only)\n- **Grafana:** http://localhost:3002\n- **MailHog (Email):** http://localhost:8025\n- **Prometheus:** http://localhost:9090"
+      }
+    }
+  ],
+  "uid": "admin-user-dashboard"
+}

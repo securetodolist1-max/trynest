@@ -1,0 +1,74 @@
+version: '3.9'
+
+services:
+  # Staging Environment
+  app-staging:
+    image: secure-todo-app:latest
+    container_name: secure-todo-app-staging
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3000"
+    environment:
+      NODE_ENV: staging
+      PORT: 3000
+    restart: unless-stopped
+    networks:
+      - deployment-network
+    volumes:
+      - ./logs/staging:/app/logs
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    labels:
+      environment: staging
+      version: latest
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Production Environment
+  app-prod:
+    image: secure-todo-app:latest
+    container_name: secure-todo-app-prod
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+    restart: unless-stopped
+    networks:
+      - deployment-network
+    volumes:
+      - ./logs/production:/app/logs
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    labels:
+      environment: production
+      version: latest
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+networks:
+  deployment-network:
+    driver: bridge
+
+volumes:
+  staging-logs:
+  production-logs:

@@ -1,0 +1,26 @@
+.add-task-form {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  box-shadow: var(--shadow);
+  margin-bottom: 2rem;
+}
+
+.add-task-form h2 {
+  margin-bottom: 1rem;
+  color: var(--text-color);
+}
+
+.add-task-form .form-group {
+  margin-bottom: 1rem;
+}
+
+.add-task-form input,
+.add-task-form textarea {
+  width: 100%;
+}
+
+.add-task-form .btn-primary {
+  width: 100%;
+  margin-top: 0.5rem;
+}

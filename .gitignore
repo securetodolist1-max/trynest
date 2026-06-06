@@ -1,0 +1,15 @@
+.env.example
+node_modules/
+dist/
+build/
+.DS_Store
+*.log
+.vscode/
+.idea/
+.git/
+coverage/
+.pytest_cache/
+__pycache__/
+*.pyc
+.env.local
+.env.*.local

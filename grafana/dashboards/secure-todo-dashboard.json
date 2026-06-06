@@ -1,0 +1,80 @@
+{
+  "title": "Secure Todo - Admin Dashboard",
+  "tags": ["secure-todo", "monitoring"],
+  "timezone": "browser",
+  "schemaVersion": 38,
+  "version": 1,
+  "refresh": "30s",
+  "time": {"from": "now-30d", "to": "now"},
+  "panels": [
+    {
+      "id": 1,
+      "title": "👥 Total Users",
+      "type": "stat",
+      "gridPos": {"h": 8, "w": 6, "x": 0, "y": 0},
+      "targets": [{"refId": "A", "datasource": {"type": "postgres", "uid": ""}, "rawSql": "SELECT COUNT(*) as count FROM users", "format": "table"}],
+      "fieldConfig": {"defaults": {"color": {"mode": "thresholds"}, "mappings": [], "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}]}}, "overrides": []},
+      "options": {"showThresholdLabels": false, "showThresholdMarkers": true}
+    },
+    {
+      "id": 2,
+      "title": "📋 Total Tasks",
+      "type": "stat",
+      "gridPos": {"h": 8, "w": 6, "x": 6, "y": 0},
+      "targets": [{"refId": "A", "datasource": {"type": "postgres", "uid": ""}, "rawSql": "SELECT COUNT(*) as count FROM tasks", "format": "table"}],
+      "fieldConfig": {"defaults": {"color": {"mode": "thresholds"}, "mappings": [], "thresholds": {"mode": "absolute", "steps": [{"color": "blue", "value": null}]}}, "overrides": []}
+    },
+    {
+      "id": 3,
+      "title": "✓ Completed Tasks",
+      "type": "stat",
+      "gridPos": {"h": 8, "w": 6, "x": 12, "y": 0},
+      "targets": [{"refId": "A", "datasource": {"type": "postgres", "uid": ""}, "rawSql": "SELECT COUNT(*) as count FROM tasks WHERE \"completed\" = true", "format": "table"}],
+      "fieldConfig": {"defaults": {"color": {"mode": "thresholds"}, "mappings": [], "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}]}}, "overrides": []}
+    },
+    {
+      "id": 4,
+      "title": "✔️ Verified Users",
+      "type": "stat",
+      "gridPos": {"h": 8, "w": 6, "x": 18, "y": 0},
+      "targets": [{"refId": "A", "datasource": {"type": "postgres", "uid": ""}, "rawSql": "SELECT COUNT(*) as count FROM users WHERE \"isVerified\" = true", "format": "table"}],
+      "fieldConfig": {"defaults": {"color": {"mode": "thresholds"}, "mappings": [], "thresholds": {"mode": "absolute", "steps": [{"color": "orange", "value": null}]}}, "overrides": []}
+    },
+    {
+      "id": 5,
+      "title": "⏳ Pending Tasks",
+      "type": "stat",
+      "gridPos": {"h": 8, "w": 6, "x": 0, "y": 8},
+      "targets": [{"refId": "A", "datasource": {"type": "postgres", "uid": ""}, "rawSql": "SELECT COUNT(*) as count FROM tasks WHERE \"completed\" = false", "format": "table"}],
+      "fieldConfig": {"defaults": {"color": {"mode": "thresholds"}, "mappings": [], "thresholds": {"mode": "absolute", "steps": [{"color": "yellow", "value": null}]}}, "overrides": []}
+    },
+    {
+      "id": 6,
+      "title": "📊 Task Status Distribution",
+      "type": "piechart",
+      "gridPos": {"h": 8, "w": 12, "x": 6, "y": 8},
+      "targets": [{"refId": "A", "datasource": {"type": "postgres", "uid": ""}, "rawSql": "SELECT CASE WHEN \"completed\" = true THEN 'Completed' ELSE 'Pending' END as status, COUNT(*) as value FROM tasks GROUP BY \"completed\"", "format": "table"}],
+      "fieldConfig": {"defaults": {"color": {"mode": "palette-classic"}, "custom": {"hideFrom": {"tooltip": false, "viz": false, "legend": false}}, "mappings": []}, "overrides": [{"matcher": {"id": "byName", "options": "Completed"}, "properties": [{"id": "color", "value": {"fixedColor": "#10b981", "mode": "fixed"}}]}, {"matcher": {"id": "byName", "options": "Pending"}, "properties": [{"id": "color", "value": {"fixedColor": "#f59e0b", "mode": "fixed"}}]}]},
+      "options": {"legend": {"displayMode": "list", "placement": "right", "showLegend": true}, "pieType": "donut"}
+    },
+    {
+      "id": 7,
+      "title": "🔐 User Verification Status",
+      "type": "piechart",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
+      "targets": [{"refId": "A", "datasource": {"type": "postgres", "uid": ""}, "rawSql": "SELECT CASE WHEN \"isVerified\" = true THEN 'Verified' ELSE 'Unverified' END as status, COUNT(*) as value FROM users GROUP BY \"isVerified\"", "format": "table"}],
+      "fieldConfig": {"defaults": {"color": {"mode": "palette-classic"}, "custom": {"hideFrom": {"tooltip": false, "viz": false, "legend": false}}, "mappings": []}, "overrides": [{"matcher": {"id": "byName", "options": "Verified"}, "properties": [{"id": "color", "value": {"fixedColor": "#10b981", "mode": "fixed"}}]}, {"matcher": {"id": "byName", "options": "Unverified"}, "properties": [{"id": "color", "value": {"fixedColor": "#ef4444", "mode": "fixed"}}]}]},
+      "options": {"legend": {"displayMode": "list", "placement": "right", "showLegend": true}, "pieType": "donut"}
+    },
+    {
+      "id": 8,
+      "title": "👤 User Task Analytics",
+      "type": "table",
+      "gridPos": {"h": 10, "w": 24, "x": 0, "y": 16},
+      "targets": [{"refId": "A", "datasource": {"type": "postgres", "uid": ""}, "rawSql": "SELECT u.name, u.email, u.\"isVerified\", COUNT(t.id) as \"Total Tasks\", SUM(CASE WHEN t.\"completed\" = true THEN 1 ELSE 0 END) as \"Completed\", SUM(CASE WHEN t.\"completed\" = false THEN 1 ELSE 0 END) as \"Pending\", ROUND(100.0 * SUM(CASE WHEN t.\"completed\" = true THEN 1 ELSE 0 END) / NULLIF(COUNT(t.id), 0), 2) as \"Completion %\" FROM users u LEFT JOIN tasks t ON u.id = t.\"userId\" GROUP BY u.id, u.name, u.email, u.\"isVerified\" ORDER BY COUNT(t.id) DESC", "format": "table"}],
+      "fieldConfig": {"defaults": {"custom": {"align": "auto", "inspect": false}, "mappings": [], "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}]}}, "overrides": []},
+      "options": {"showHeader": true, "sortBy": [{"desc": true, "displayName": "Total Tasks"}]}
+    }
+  ],
+  "uid": "secure-todo-dashboard"
+}
